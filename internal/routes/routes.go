@@ -22,7 +22,7 @@ func Register(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"success": poi})
+	context.JSON(http.StatusCreated, gin.H{"success": poi})
 }
 
 func ListAllPoints(context *gin.Context) {
@@ -46,7 +46,7 @@ func GetPoints(context *gin.Context) {
 
 	pois, err := database.GetPoints(poi.X, poi.Y, poi.D_Max)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Erro ao buscar os pontos no banco de dados"})
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar os pontos no banco de dados"})
 		return
 	}
 
