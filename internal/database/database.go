@@ -1,10 +1,6 @@
 package database
 
-import (
-	"errors"
-
-	"github.com/Liedsonfsa/API-Challenges-Points-of-Interest/internal/models"
-)
+import "github.com/Liedsonfsa/API-Challenges-Points-of-Interest/internal/models"
 
 func RegisterPOI(name string, x, y uint64) error {
 	query := "INSERT INTO pois (name, x, y) VALUES (?, ?, ?)"
@@ -31,15 +27,13 @@ func GetAllPoints() ([]models.POI, error) {
 
 	db, err := initDatabase()
 	if err != nil {
-		// return nil, err
-		return nil, errors.New("erro ao estabelecer a conexão com o banco de dados")
+		return nil, err
 	}
 	defer db.Close()
 
 	rows, err := db.Query(query)
 	if err != nil {
-		// return nil, err
-		return nil, errors.New("erro ao executar a query")
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -48,11 +42,41 @@ func GetAllPoints() ([]models.POI, error) {
 	for rows.Next() {
 		var poi models.POI
 		if err = rows.Scan(&poi.ID, &poi.Name, &poi.X, &poi.Y); err != nil {
-			// return nil, err
-			return nil, errors.New("erro ao scaner algum ponto")
+			return nil, err
 		}
 
 		pois = append(pois, poi)
+	}
+
+	return pois, nil
+}
+
+func GetPoints(x, y, d_max uint64) ([]string, error) {
+	query := "SELECT * FROM pois"
+
+	db, err := initDatabase()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var pois []string
+
+	for rows.Next() {
+		var poi models.POI
+		if err = rows.Scan(&poi.ID, &poi.Name, &poi.X, &poi.Y); err != nil {
+			return nil, err
+		}
+
+		if poi.WithinTheDistance(x, y, d_max) {
+			pois = append(pois, poi.Name)
+		}
 	}
 
 	return pois, nil

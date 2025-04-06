@@ -11,6 +11,7 @@ func main() {
 
 	server.POST("/register", routes.Register)
 	server.GET("/list", routes.ListAllPoints)
+	server.GET("/get-points", routes.GetPoints)
 
 	server.Run(":3000")
 }
