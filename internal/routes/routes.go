@@ -24,3 +24,13 @@ func Register(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"success": poi})
 }
+
+func ListAllPoints(context *gin.Context) {
+	pois, err := database.GetAllPoints()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar os pontos no banco de dados"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"points": pois})
+}
